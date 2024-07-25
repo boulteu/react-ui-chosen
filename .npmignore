@@ -1,0 +1,5 @@
+# development
+/src
+
+# config
+*.config.js
