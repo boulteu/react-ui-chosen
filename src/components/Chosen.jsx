@@ -110,7 +110,7 @@ const Chosen = (props) => {
                 const handleScroll = () => {
                     const alreadyScrolledHeight = listRef.current.clientHeight + (listRef.current.pageYOffset || listRef.current.scrollTop)
                     if (alreadyScrolledHeight >= listRef.current.scrollHeight) {
-                        props.onScrollToListBottom()
+                        props.onScrollToListBottom(search)
                     }
                 };
 
