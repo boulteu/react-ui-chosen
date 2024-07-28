@@ -1,6 +1,6 @@
 {
   "name": "react-ui-chosen",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "main": "./dist/bundle.js",
   "description": "A simple and reusable chosen component for React",
   "keywords": [

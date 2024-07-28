@@ -50,8 +50,8 @@ You can use :
   values={values}
   multiple={true}
   loading={false}
-  onScrollToListBottom={loadData}
-  onSearch={loadData}
+  onScrollToListBottom={(search) => {/* search is the Chosen search bar value */}}
+  onSearch={(search) => {/* search is the Chosen search bar value */}}
 />
 ```
 
