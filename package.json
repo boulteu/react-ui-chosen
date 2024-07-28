@@ -1,6 +1,6 @@
 {
   "name": "react-ui-chosen",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "main": "./dist/bundle.js",
   "description": "A simple and reusable chosen component for React",
   "keywords": [
@@ -23,7 +23,7 @@
     "url": "https://github.com/boulteu/react-ui-chosen/issues"
   },
   "homepage": "https://github.com/boulteu/react-ui-chosen#readme",
-  "dependencies": {
+  "peerDependencies": {
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
