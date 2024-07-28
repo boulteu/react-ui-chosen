@@ -101,29 +101,33 @@ const Chosen = (props) => {
     }, []);
 
     useEffect(() => {
-        if (isOpen) {
-            if (inputRef.current) {
-                inputRef.current.focus();
-            }
-
-            if (actionOnScroll && listRef.current) {
-                const handleScroll = () => {
-                    const alreadyScrolledHeight = listRef.current.clientHeight + (listRef.current.pageYOffset || listRef.current.scrollTop)
-                    if (alreadyScrolledHeight >= listRef.current.scrollHeight) {
-                        props.onScrollToListBottom(search)
-                    }
-                };
-
-                listRef.current.addEventListener('scroll', handleScroll);
-            }
-        }
-    }, [isOpen]);
-
-    useEffect(() => {
         if (customSearch) {
             props.onSearch(search)
         }
     }, [search]);
+
+    useEffect(() => {
+        if (isOpen && inputRef.current) {
+            inputRef.current.focus();
+        }
+
+        if (actionOnScroll && listRef.current) {
+            const handleScroll = () => {
+                const alreadyScrolledHeight = listRef.current.clientHeight + (listRef.current.pageYOffset || listRef.current.scrollTop)
+                if (alreadyScrolledHeight >= listRef.current.scrollHeight) {
+                    props.onScrollToListBottom(search)
+                }
+            };
+
+            listRef.current.addEventListener('scroll', handleScroll);
+
+            return () => {
+                if (listRef.current) {
+                    listRef.current.removeEventListener('scroll', handleScroll);
+                }
+            };
+        }
+    }, [isOpen, search]);
 
     return (
         <div className={`relative ${props.className}`} ref={divRef}>
