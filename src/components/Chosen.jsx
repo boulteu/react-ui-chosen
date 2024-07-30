@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState, useMemo, useEffect } from 'react';
 import styles from '../styles/Chosen.module.css';
 
 import Arrow from './svg/Arrow';
@@ -13,8 +13,13 @@ const Chosen = (props) => {
     const listRef = useRef(null);
 
     const [isOpen, setIsOpen] = useState(false);
-    const [selected, setSelected] = useState(props.multiple ? [] : '');
+    const [selectedValue, setSelectedValue] = useState({});
     const [search, setSearch] = useState('');
+
+    const selected = useMemo(() => {
+        const arr = Object.keys(selectedValue);
+        return props.multiple ? arr : (arr[0] ? arr[0] : '');
+    }, [selectedValue]);
 
     const flattenObject = (obj) => {
         const flattened = {};
@@ -75,14 +80,17 @@ const Chosen = (props) => {
 
     const selectValue = (value) => {
         if (!selected.includes(value)) {
-            setSelected(prevSelected => props.multiple ? Object.keys(flattenValues).filter(item => [...prevSelected, value].includes(item)) : value);
+            setSelectedValue(prevSelected => ({
+                ...(props.multiple ? prevSelected : {}),
+                ...Object.fromEntries(Object.entries(flattenValues).filter(([key]) => key === value))
+            }));
             setIsOpen(false);
         }
     };
 
     const unselectValue = (value) => {
         if (selected.includes(value)) {
-            setSelected(prevSelected => props.multiple ? prevSelected.filter(item => item !== value) : '');
+            setSelectedValue(prevSelected => Object.fromEntries(Object.entries(prevSelected).filter(([key]) => key !== value)));
         }
     };
 
@@ -135,7 +143,7 @@ const Chosen = (props) => {
                 {selected.map(key => (
                     <li key={key} className={`relative float-left border border-slate-400 rounded m-1 ml-0 p-1 pr-5 leading-3 text-gray-700 ${styles.selectChoice}`}>
                         <span>
-                            {flattenValues[key]}
+                            {selectedValue[key]}
                         </span>
                         <a className={`absolute top-0.5 right-0.5 w-4 h-4 cursor-pointer`} onClick={() => unselectValue(key)}>
                             <Close className={`stroke-2 stroke-slate-400 hover:stroke-slate-500`} />
@@ -159,7 +167,7 @@ const Chosen = (props) => {
                 onClick={toggleValues}
             >
                 <span className={`block truncate mt-1 mr-6`}>
-                    {flattenValues[selected]}
+                    {selectedValue[selected]}
                 </span>
                 <Arrow className={`absolute top-1/3 right-2 w-2 h-2 fill-slate-400`} transform={isOpen ? 'rotate(180)' : ''} />
             </a>}
