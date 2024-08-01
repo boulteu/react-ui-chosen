@@ -15,6 +15,7 @@ const Chosen = (props) => {
     const [isOpen, setIsOpen] = useState(false);
     const [selectedValue, setSelectedValue] = useState({});
     const [search, setSearch] = useState('');
+    const [pointer, setPointer] = useState(-1);
 
     const selected = useMemo(() => {
         const arr = Object.keys(selectedValue);
@@ -60,21 +61,16 @@ const Chosen = (props) => {
     const actionOnScroll = typeof props.onScrollToListBottom === 'function';
     const customSearch = typeof props.onSearch === 'function';
 
-    const flattenValues = flattenObject(props.values);
     const filteredValues = customSearch ? props.values : filterBySearch(props.values);
+    const flattenFilteredValues = flattenObject(filteredValues);
 
-    const openValues = () => {
-        setIsOpen(true);
-        if (inputRef.current) {
-            inputRef.current.focus();
-        }
-    };
+    const pointedValue = useMemo(() => {
+        return Object.keys(flattenFilteredValues)[pointer];
+    }, [pointer]);
 
-    const toggleValues = () => {
-        if (isOpen) {
-            setIsOpen(false)
-        } else {
-            openValues()
+    const pointValue = (num) => {
+        if (Object.keys(flattenFilteredValues)[pointer + num]) {
+            setPointer(prevPointer => prevPointer + num);
         }
     };
 
@@ -82,7 +78,7 @@ const Chosen = (props) => {
         if (!selected.includes(value)) {
             setSelectedValue(prevSelected => ({
                 ...(props.multiple ? prevSelected : {}),
-                ...Object.fromEntries(Object.entries(flattenValues).filter(([key]) => key === value))
+                ...Object.fromEntries(Object.entries(flattenFilteredValues).filter(([key]) => key === value))
             }));
             setIsOpen(false);
         }
@@ -93,6 +89,39 @@ const Chosen = (props) => {
             setSelectedValue(prevSelected => Object.fromEntries(Object.entries(prevSelected).filter(([key]) => key !== value)));
         }
     };
+
+    const removeLastSelected = () => {
+        if (!search) {
+            const keys = Object.keys(selectedValue);
+            if (keys.length) {
+                unselectValue(keys[keys.length - 1]);
+            }
+        }
+    };
+
+    const handleKeyUp = (e) => {
+        switch (e.key) {
+            case 'ArrowUp':
+                pointValue(-1);
+                break
+            case 'ArrowDown':
+                if (!isOpen) {
+                    setIsOpen(true)
+                } else {
+                    pointValue(1);
+                }
+                break
+            case 'Enter':
+                selectValue(pointedValue);
+                break
+        }
+    }
+
+    const handleKeyDown = (e) => {
+        if (e.key === 'Backspace') {
+            removeLastSelected();
+        }
+    }
 
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -109,15 +138,23 @@ const Chosen = (props) => {
     }, []);
 
     useEffect(() => {
+        if (isOpen) {
+            if (inputRef.current) {
+                inputRef.current.focus();
+            }
+        } else {
+            setSearch('');
+        }
+    }, [isOpen]);
+
+    useEffect(() => {
         if (customSearch) {
             props.onSearch(search)
         }
     }, [search]);
 
     useEffect(() => {
-        if (isOpen && inputRef.current) {
-            inputRef.current.focus();
-        }
+        setPointer(-1);
 
         if (actionOnScroll && listRef.current) {
             const handleScroll = () => {
@@ -139,7 +176,7 @@ const Chosen = (props) => {
 
     return (
         <div className={`relative ${props.className}`} ref={divRef}>
-            {props.multiple && <ul className={`bg-white border border-slate-400 rounded py-0.5 px-1 min-h-9 cursor-pointer ${isOpen ? 'border-b-0 rounded-b-none' : ''}`} onClick={openValues}>
+            {props.multiple && <ul className={`bg-white border border-slate-400 rounded py-0.5 px-1 min-h-9 cursor-pointer ${isOpen ? 'border-b-0 rounded-b-none' : ''}`} onClick={() => setIsOpen(true)}>
                 {selected.map(key => (
                     <li key={key} className={`relative float-left border border-slate-400 rounded m-1 ml-0 p-1 pr-5 leading-3 text-gray-700 ${styles.selectChoice}`}>
                         <span>
@@ -157,6 +194,8 @@ const Chosen = (props) => {
                         className={`bg-transparent w-6 h-6 mt-0.5 focus:outline-none`}
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
+                        onKeyUp={handleKeyUp}
+                        onKeyDown={handleKeyDown}
                         ref={inputRef}
                     />
                 </li>
@@ -164,7 +203,7 @@ const Chosen = (props) => {
             </ul>}
             {!props.multiple && <a
                 className={`relative block h-9 pl-2 border border-slate-400 rounded leading-6 cursor-pointer ${isOpen ? styles.selectOpen + ' border-b-0 rounded-b-none' : styles.selectSingle}`}
-                onClick={toggleValues}
+                onClick={() => setIsOpen(!isOpen)}
             >
                 <span className={`block truncate mt-1 mr-6`}>
                     {selectedValue[selected]}
@@ -179,6 +218,7 @@ const Chosen = (props) => {
                         className={`bg-white border border-slate-400 w-full h-8 pl-1 pr-6 focus:outline-none`}
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
+                        onKeyUp={handleKeyUp}
                         ref={inputRef}
                     />
                     <Search className={`absolute top-1/4 right-2 w-5 h-5 stroke-2 stroke-slate-400`} />
@@ -186,9 +226,10 @@ const Chosen = (props) => {
                 <List
                     className={`${props.multiple ? 'max-h-64' : 'max-h-52'} overflow-y-auto`}
                     data={filteredValues}
-                    openAll={search}
+                    openAll={search || pointedValue}
                     selected={selected}
                     selectCallback={selectValue}
+                    pointedValue={pointedValue}
                     innerRef={listRef}
                 />
             </div>}

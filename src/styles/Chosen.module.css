@@ -7,6 +7,6 @@
 .selectChoice {
   background: linear-gradient(#f4f4f4 20%, #f0f0f0 50%, #e8e8e8 52%, #eee 100%);
 }
-.selectResult:hover {
+.selectedResult, .selectResult:hover {
   background: linear-gradient(#3875d7 20%, #2a62bc 90%);
 }

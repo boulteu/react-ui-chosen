@@ -10,6 +10,13 @@ const List = (props) => {
         updatedOpened[key] = value;
         setOpened(updatedOpened);
     };
+
+    const handleRef = (node, value) => {
+        if (node && value === props.pointedValue && props.innerRef.current) {
+            props.innerRef.current.scrollTop = node.offsetTop - props.innerRef.current.clientHeight / 2 + node.clientHeight / 2
+        }
+    };
+
     const renderListItems = (obj) => {
         return Object.keys(obj).map((key, index) => {
             const value = obj[key];
@@ -34,8 +41,9 @@ const List = (props) => {
             return (
                 <li
                     key={key}
-                    className={`p-1 ${props.selected.includes(key) ? 'text-slate-400 hover:cursor-not-allowed' : styles.selectResult + ' hover:text-white hover:cursor-pointer'}`}
+                    className={`p-1 ` + (key === props.pointedValue ? `${styles.selectedResult} text-white` : (props.selected.includes(key) ? `text-slate-400 hover:cursor-not-allowed` : `${styles.selectResult} hover:text-white hover:cursor-pointer`))}
                     onClick={(e) => { e.stopPropagation(); props.selectCallback(key); }}
+                    ref={node => handleRef(node, key)}
                 >
                     {value}
                 </li>
