@@ -1,9 +1,11 @@
 import { useRef, useState, useMemo, useEffect } from 'react';
 import styles from '../styles/Chosen.module.css';
 
+import Add from './svg/Add';
 import Arrow from './svg/Arrow';
 import Close from './svg/Close';
 import Loading from './svg/Loading';
+import Remove from './svg/Remove';
 import Search from './svg/Search';
 import List from './List';
 
@@ -176,7 +178,7 @@ const Chosen = (props) => {
 
     return (
         <div className={`relative ${props.className}`} ref={divRef}>
-            {props.multiple && <ul className={`bg-white border border-slate-400 rounded py-0.5 px-1 min-h-9 cursor-pointer ${isOpen ? 'border-b-0 rounded-b-none' : ''}`} onClick={() => setIsOpen(true)}>
+            {props.multiple && <ul className={`relative bg-white border border-slate-400 rounded py-0.5 pl-1 pr-5 min-h-9 max-h-28 overflow-y-auto cursor-pointer ${isOpen ? 'border-b-0 rounded-b-none' : ''}`} onClick={() => setIsOpen(true)}>
                 {selected.map(key => (
                     <li key={key} className={`relative float-left border border-slate-400 rounded m-1 ml-0 p-1 pr-5 leading-3 text-gray-700 ${styles.selectChoice}`}>
                         <span>
@@ -191,7 +193,7 @@ const Chosen = (props) => {
                     <input
                         type="text"
                         autoComplete="off"
-                        className={`bg-transparent w-6 h-6 mt-0.5 focus:outline-none`}
+                        className={`${selected.length ? 'w-6' : 'w-full'} h-6 bg-transparent mt-0.5 focus:outline-none`}
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
                         onKeyUp={handleKeyUp}
@@ -199,7 +201,16 @@ const Chosen = (props) => {
                         ref={inputRef}
                     />
                 </li>
-                <li className={`clear-left`}></li>
+                <li className={`clear-left w-4 h-4 absolute right-0.5`}>
+                    {isOpen && <div>
+                        <a onClick={() => setSelectedValue(flattenFilteredValues)}>
+                            <Add className={`stroke-2 stroke-slate-400 hover:stroke-slate-500`} />
+                        </a>
+                        <a onClick={() => setSelectedValue({})}>
+                            <Remove className={`stroke-2 stroke-slate-400 hover:stroke-slate-500`} />
+                        </a>
+                    </div>}
+                </li>
             </ul>}
             {!props.multiple && <a
                 className={`relative block h-9 pl-2 border border-slate-400 rounded leading-6 cursor-pointer ${isOpen ? styles.selectOpen + ' border-b-0 rounded-b-none' : styles.selectSingle}`}
