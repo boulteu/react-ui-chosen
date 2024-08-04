@@ -36,10 +36,6 @@ const Chosen = (props) => {
         };
     };
 
-    const debouncedSearch = useRef(debounce((value) => {
-        props.onSearch(value);
-    }, 300)).current;
-
     const flattenObject = (obj) => {
         const flattened = {};
 
@@ -78,6 +74,12 @@ const Chosen = (props) => {
 
     const actionOnScroll = typeof props.onScrollToListBottom === 'function';
     const customSearch = typeof props.onSearch === 'function';
+
+    const debouncedSearch = useRef(debounce((value) => {
+        if (customSearch) {
+            props.onSearch(value);
+        }
+    }, 300)).current;
 
     const filteredValues = customSearch ? props.values : filterBySearch(props.values);
     const flattenFilteredValues = flattenObject(filteredValues);
