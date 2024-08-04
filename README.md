@@ -18,10 +18,10 @@ import Chosen from "react-ui-chosen";
 
 const Example = () => {
   const values = {
-    1: 'John',
-    2: 'Doe',
-    3: 'Some',
-    4: 'Test'
+    'John' : 'John',
+    'Doe'  : 'Doe',
+    'Some' : 'Some',
+    'Test' : 'Test'
   };
   return (
     <Chosen values={values} />

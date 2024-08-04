@@ -24,6 +24,22 @@ const Chosen = (props) => {
         return props.multiple ? arr : (arr[0] ? arr[0] : '');
     }, [selectedValue]);
 
+    const debounce = (func, delay) => {
+        let timeoutId;
+        return (...args) => {
+            if (timeoutId) {
+                clearTimeout(timeoutId);
+            }
+            timeoutId = setTimeout(() => {
+                func(...args);
+            }, delay);
+        };
+    };
+
+    const debouncedSearch = useRef(debounce((value) => {
+        props.onSearch(value);
+    }, 300)).current;
+
     const flattenObject = (obj) => {
         const flattened = {};
 
@@ -101,7 +117,7 @@ const Chosen = (props) => {
         }
     };
 
-    const handleKeyUp = (e) => {
+    const handleKeyDown = (e) => {
         switch (e.key) {
             case 'ArrowUp':
                 pointValue(-1);
@@ -116,12 +132,9 @@ const Chosen = (props) => {
             case 'Enter':
                 selectValue(pointedValue);
                 break
-        }
-    }
-
-    const handleKeyDown = (e) => {
-        if (e.key === 'Backspace') {
-            removeLastSelected();
+            case 'Backspace':
+                removeLastSelected();
+                break
         }
     }
 
@@ -151,7 +164,7 @@ const Chosen = (props) => {
 
     useEffect(() => {
         if (customSearch) {
-            props.onSearch(search)
+            debouncedSearch(search);
         }
     }, [search]);
 
@@ -196,7 +209,6 @@ const Chosen = (props) => {
                         className={`${selected.length ? 'w-6' : 'w-full'} h-6 bg-transparent mt-0.5 focus:outline-none`}
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
-                        onKeyUp={handleKeyUp}
                         onKeyDown={handleKeyDown}
                         ref={inputRef}
                     />
@@ -229,7 +241,7 @@ const Chosen = (props) => {
                         className={`bg-white border border-slate-400 w-full h-8 pl-1 pr-6 focus:outline-none`}
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
-                        onKeyUp={handleKeyUp}
+                        onKeyDown={handleKeyDown}
                         ref={inputRef}
                     />
                     <Search className={`absolute top-1/4 right-2 w-5 h-5 stroke-2 stroke-slate-400`} />
