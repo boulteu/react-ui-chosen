@@ -21,7 +21,7 @@ const Chosen = (props) => {
 
     const selected = useMemo(() => {
         const arr = Object.keys(selectedValue);
-        return props.multiple ? arr : (arr[0] ? arr[0] : '');
+        return props.multiple ? arr : arr[0];
     }, [selectedValue]);
 
     const debounce = (func, delay) => {
@@ -89,13 +89,13 @@ const Chosen = (props) => {
     }, [pointer]);
 
     const pointValue = (num) => {
-        if (Object.keys(flattenFilteredValues)[pointer + num]) {
+        if (Object.keys(flattenFilteredValues)[pointer + num] !== undefined) {
             setPointer(prevPointer => prevPointer + num);
         }
     };
 
     const selectValue = (value) => {
-        if (!selected.includes(value)) {
+        if (props.multiple ? !selected.includes(value) : selected !== value) {
             setSelectedValue(prevSelected => ({
                 ...(props.multiple ? prevSelected : {}),
                 ...Object.fromEntries(Object.entries(flattenFilteredValues).filter(([key]) => key === value))
@@ -105,7 +105,7 @@ const Chosen = (props) => {
     };
 
     const unselectValue = (value) => {
-        if (selected.includes(value)) {
+        if (props.multiple ? selected.includes(value) : selected === value) {
             setSelectedValue(prevSelected => Object.fromEntries(Object.entries(prevSelected).filter(([key]) => key !== value)));
         }
     };

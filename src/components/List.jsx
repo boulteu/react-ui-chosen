@@ -5,6 +5,10 @@ import Arrow from './svg/Arrow';
 const List = (props) => {
     const [opened, setOpened] = useState({});
 
+    const isSelected = (value) => {
+        return Array.isArray(props.selected) ? props.selected.includes(value) : props.selected === value;
+    };
+
     const updateOpened = (key, value) => {
         const updatedOpened = { ...opened };
         updatedOpened[key] = value;
@@ -41,7 +45,7 @@ const List = (props) => {
             return (
                 <li
                     key={key}
-                    className={`p-1 ` + (key === props.pointedValue ? `${styles.selectedResult} text-white` : (props.selected.includes(key) ? `text-slate-400 hover:cursor-not-allowed` : `${styles.selectResult} hover:text-white hover:cursor-pointer`))}
+                    className={`p-1 ` + (key === props.pointedValue ? `${styles.selectedResult} text-white` : (isSelected(key) ? `text-slate-400 hover:cursor-not-allowed` : `${styles.selectResult} hover:text-white hover:cursor-pointer`))}
                     onClick={(e) => { e.stopPropagation(); props.selectCallback(key); }}
                     ref={node => handleRef(node, key)}
                 >
