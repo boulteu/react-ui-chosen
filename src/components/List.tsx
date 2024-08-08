@@ -22,7 +22,7 @@ const List = (props) => {
     };
 
     const renderListItems = (obj) => {
-        return Object.keys(obj).map((key, index) => {
+        return Object.keys(obj).map((key) => {
             const value = obj[key];
 
             if (typeof value === 'object' && value !== null) {

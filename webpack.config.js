@@ -2,23 +2,24 @@ const path = require('path');
 
 module.exports = {
     mode: 'production',
-    entry: './src/index.js',
+    entry: './src/index.ts',
     output: {
         path: path.resolve('dist'),
-        filename: 'bundle.js',
-        libraryTarget: 'commonjs2'
+        filename: 'index.js',
+        libraryTarget: 'commonjs'
     },
     module: {
         rules: [
             {
-                test: /\.(js|jsx)$/,
+                test: /\.(js|ts|jsx|tsx)$/,
                 exclude: /node_modules/,
                 use: {
                     loader: 'babel-loader',
                     options: {
                         presets: [
                             '@babel/preset-env',
-                            ['@babel/preset-react', {'runtime': 'automatic'}]
+                            ['@babel/preset-react', {'runtime': 'automatic'}],
+                            '@babel/preset-typescript'
                         ]
                     }
                 }
@@ -40,7 +41,7 @@ module.exports = {
         ]
     },
     resolve: {
-        extensions: ['.js', '.jsx']
+        extensions: ['.js', '.ts', '.jsx', '.tsx']
     },
     externals: {
         'react': 'react'

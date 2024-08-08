@@ -1,4 +1,4 @@
-import { useRef, useState, useMemo, useEffect } from 'react';
+import React, { useRef, useState, useMemo, useEffect } from 'react';
 import styles from '../styles/Chosen.module.css';
 
 import Add from './svg/Add';
@@ -9,8 +9,19 @@ import Remove from './svg/Remove';
 import Search from './svg/Search';
 import List from './List';
 
-const Chosen = (props) => {
+interface ChosenProps {
+    className?: string;
+    values: object;
+    multiple?: boolean;
+    loading?: boolean;
+    onScrollToListBottom?: (search) => void;
+    onSearch?: (search) => void;
+}
+
+const Chosen: React.FC<ChosenProps> = (props) => {
     const divRef = useRef(null);
+    const selectRef = useRef(null);
+    const buttonsRef = useRef(null);
     const inputRef = useRef(null);
     const listRef = useRef(null);
 
@@ -19,10 +30,10 @@ const Chosen = (props) => {
     const [search, setSearch] = useState('');
     const [pointer, setPointer] = useState(-1);
 
-    const selected = useMemo(() => {
+    const selected: any = useMemo(() => {
         const arr = Object.keys(selectedValue);
         return props.multiple ? arr : arr[0];
-    }, [selectedValue]);
+    }, [selectedValue, props.multiple]);
 
     const debounce = (func, delay) => {
         let timeoutId;
@@ -98,7 +109,7 @@ const Chosen = (props) => {
         if (props.multiple ? !selected.includes(value) : selected !== value) {
             setSelectedValue(prevSelected => ({
                 ...(props.multiple ? prevSelected : {}),
-                ...Object.fromEntries(Object.entries(flattenFilteredValues).filter(([key]) => key === value))
+                ...Object.fromEntries(Object.entries(flattenFilteredValues).filter(([key, _]) => key === value))
             }));
             setIsOpen(false);
         }
@@ -106,7 +117,7 @@ const Chosen = (props) => {
 
     const unselectValue = (value) => {
         if (props.multiple ? selected.includes(value) : selected === value) {
-            setSelectedValue(prevSelected => Object.fromEntries(Object.entries(prevSelected).filter(([key]) => key !== value)));
+            setSelectedValue(prevSelected => Object.fromEntries(Object.entries(prevSelected).filter(([key, _]) => key !== value)));
         }
     };
 
@@ -140,6 +151,12 @@ const Chosen = (props) => {
         }
     }
 
+    const handleBulk = (event, value) => {
+        event.stopPropagation();
+        setSelectedValue(value);
+        setIsOpen(false);
+    }
+
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (divRef.current && !divRef.current.contains(event.target)) {
@@ -158,6 +175,23 @@ const Chosen = (props) => {
         if (isOpen) {
             if (inputRef.current) {
                 inputRef.current.focus();
+            }
+
+            if (selectRef.current && buttonsRef.current) {
+                const handleScroll = () => {
+                    buttonsRef.current.style.top = `${selectRef.current.scrollTop + 2}px`;
+                };
+
+                selectRef.current.addEventListener('scroll', handleScroll);
+
+                return () => {
+                    if (selectRef.current) {
+                        selectRef.current.removeEventListener('scroll', handleScroll);
+                    }
+                    if (buttonsRef.current) {
+                        buttonsRef.current.style.top = '';
+                    }
+                };
             }
         } else {
             setSearch('');
@@ -193,8 +227,8 @@ const Chosen = (props) => {
 
     return (
         <div className={`relative ${props.className}`} ref={divRef}>
-            {props.multiple && <ul className={`relative bg-white border border-slate-400 rounded py-0.5 pl-1 pr-5 min-h-9 max-h-28 overflow-y-auto cursor-pointer ${isOpen ? 'border-b-0 rounded-b-none' : ''}`} onClick={() => setIsOpen(true)}>
-                {selected.map(key => (
+            {props.multiple && <ul className={`relative bg-white border border-slate-400 rounded py-0.5 pl-1 pr-5 min-h-9 max-h-28 overflow-y-auto cursor-pointer ${isOpen ? 'border-b-0 rounded-b-none' : ''}`} onClick={() => setIsOpen(true)} ref={selectRef}>
+                {Array.isArray(selected) && selected.map(key => (
                     <li key={key} className={`relative float-left border border-slate-400 rounded m-1 ml-0 p-1 pr-5 leading-3 text-gray-700 ${styles.selectChoice}`}>
                         <span>
                             {selectedValue[key]}
@@ -215,12 +249,12 @@ const Chosen = (props) => {
                         ref={inputRef}
                     />
                 </li>
-                <li className={`clear-left w-4 h-4 absolute right-0.5`}>
+                <li className={`clear-left w-4 h-4 absolute right-0.5`} ref={buttonsRef}>
                     {isOpen && <div>
-                        <a onClick={() => setSelectedValue(flattenFilteredValues)}>
+                        <a onClick={(e) => handleBulk(e, flattenFilteredValues)}>
                             <Add className={`stroke-2 stroke-slate-400 hover:stroke-slate-500`} />
                         </a>
-                        <a onClick={() => setSelectedValue({})}>
+                        <a onClick={(e) => handleBulk(e, {})}>
                             <Remove className={`stroke-2 stroke-slate-400 hover:stroke-slate-500`} />
                         </a>
                     </div>}
