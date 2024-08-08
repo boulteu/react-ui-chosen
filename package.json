@@ -1,6 +1,6 @@
 {
   "name": "react-ui-chosen",
-  "version": "1.1.3",
+  "version": "1.1.4",
   "main": "./dist/index.js",
   "types": "./dist/types/index.d.ts",
   "description": "A simple and reusable chosen component for React",
@@ -14,7 +14,7 @@
   "scripts": {
     "build": "webpack --no-cache --progress",
     "types": "tsc --declaration --emitDeclarationOnly --outDir dist/types",
-    "prepublish": "npm run build && npm run types"
+    "fullbuild": "npm run build && npm run types"
   },
   "repository": {
     "type": "git",
