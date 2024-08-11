@@ -1,12 +1,6 @@
 import React, { useRef, useState, useMemo, useEffect } from 'react';
+import { Add, Arrow, Close, Loading, Remove, Search } from 'react-svg-icons-kit';
 import styles from '../styles/Chosen.module.css';
-
-import Add from './svg/Add';
-import Arrow from './svg/Arrow';
-import Close from './svg/Close';
-import Loading from './svg/Loading';
-import Remove from './svg/Remove';
-import Search from './svg/Search';
 import List from './List';
 
 interface ChosenProps {

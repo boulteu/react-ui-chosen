@@ -1,6 +1,6 @@
 import { useState } from 'react';
+import { Arrow } from 'react-svg-icons-kit';
 import styles from '../styles/Chosen.module.css';
-import Arrow from './svg/Arrow';
 
 const List = (props) => {
     const [opened, setOpened] = useState({});
