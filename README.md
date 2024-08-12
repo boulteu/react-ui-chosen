@@ -10,7 +10,11 @@ The package can be installed via [npm](https://github.com/npm/cli):
 npm install react-ui-chosen --save
 ```
 
-You’ll need to install React separately since those dependencies aren’t included in the package. Below is a simple example of how to use the Chosen in a React view.
+You’ll need to install React and Tailwind CSS separately since those dependencies aren’t included in the package.
+
+Once Tailwind CSS installed, you'll need to add `"./node_modules/react-ui-chosen/**/*.{js,ts,jsx,tsx,mdx}"` to `content` in your `tailwind.config.js` file.
+
+Below is a simple example of how to use the Chosen in a React view.
 
 ```js
 import React from "react";
@@ -57,6 +61,19 @@ You can use :
 
 ## Compatibility
 
+### Tailwind CSS
+
+This package has been developed with version 3.4.6.
+
 ### React
 
 We're always trying to stay compatible with the latest version of React.
+
+## Accessibility
+
+### Keyboard support
+
+- _Up_: Move to the previous list option.
+- _Down_: Move to the next list option.
+- _Enter_: Select a list option.
+- _Backspace_: Unselect a list option.

@@ -35,14 +35,6 @@ module.exports = {
                                 namedExport: false
                             }
                         }
-                    },
-                    {
-                        loader: 'postcss-loader',
-                        options: {
-                            postcssOptions: {
-                                config: path.resolve(__dirname, 'postcss.config.js')
-                            }
-                        }
                     }
                 ]
             }
